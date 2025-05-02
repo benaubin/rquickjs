@@ -175,7 +175,16 @@ impl<'js> Ctx<'js> {
         options: EvalOptions,
     ) -> Result<V> {
         let file_name = CStr::from_bytes_with_nul(b"eval_script\0").unwrap();
+        self.eval_with_options_and_name(source, options, file_name)
+    }
 
+    /// Evaluate a script with the given options and file name
+    pub fn eval_with_options_and_name<V: FromJs<'js>, S: Into<Vec<u8>>>(
+        &self,
+        source: S,
+        options: EvalOptions,
+        file_name: CStr
+    ) -> Result<V> {
         V::from_js(self, unsafe {
             let val = self.eval_raw(source, file_name, options.to_flag())?;
             Value::from_js_value(self.clone(), val)
